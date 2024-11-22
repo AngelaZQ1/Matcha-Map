@@ -13,6 +13,6 @@ struct Cafe: Decodable {
     var name: String
     var avgRating: Int
     var reviews: [Review]
-    var images: [UIImageView]
+//    var images: figure out type that works with firebase storage
 }
 

@@ -15,6 +15,6 @@ struct Review: Decodable {
     var rating: Int
     var title: String
     var details: String
-    var images: [UIImageView]
+//    var images: [UIImageView]
 }
 
