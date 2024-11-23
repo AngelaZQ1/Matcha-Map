@@ -20,6 +20,7 @@ class ViewController: UIViewController {
     let database = Firestore.firestore()
     
     let locationManager = CLLocationManager()
+    let notificationCenter = NotificationCenter.default
     
     override func loadView() {
         view = mainScreen
@@ -94,6 +95,7 @@ class ViewController: UIViewController {
         mainScreen.mapView.addAnnotation(northeastern)
         mainScreen.mapView.delegate = self
         
+        addNotificationCenterObservers()
     }
     
     @objc func onButtonCurrentLocationTapped(){
