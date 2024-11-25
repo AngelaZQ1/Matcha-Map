@@ -15,6 +15,12 @@ class ProfilePageView: UIView {
     // Default image to use if profilePicURL is nil or invalid
     let defaultImage = UIImage(systemName: "photo")  // Default image (System icon)
     
+    // Default initializer
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        self.backgroundColor = .white
+    }
+    
     // Modify the initializer to accept the profile image URL string
     init(frame: CGRect, profileImageURLString: String?) {
         self.profileImageURLString = profileImageURLString  // Set the passed image URL string
