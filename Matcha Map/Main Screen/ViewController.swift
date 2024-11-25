@@ -49,8 +49,8 @@ class ViewController: UIViewController {
                 
                 // Reset chat list and reload table
                 self.cafeList.removeAll()
-                self.mainScreen.tableViewChats.reloadData()
-                self.setupRightBarButton(isLoggedin: false)
+                //self.mainScreen.tableViewChats.reloadData()
+                //self.setupRightBarButton(isLoggedin: false)
             }
         }
     }

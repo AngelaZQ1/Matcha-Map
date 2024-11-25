@@ -15,6 +15,20 @@ struct Review: Decodable {
     var rating: Int
     var title: String
     var details: String
-//    var images: [UIImageView]
+    var images: [String] = [] // Array of image URLs
 }
+
+extension Review {
+    func toDictionary() -> [String: Any] {
+        return [
+            "id": id ?? "",
+            "user": user,
+            "cafe": cafe.toDictionary(), // Convert Cafe to a dictionary
+            "rating": rating,
+            "title": title,
+            "details": details
+        ]
+    }
+}
+
 

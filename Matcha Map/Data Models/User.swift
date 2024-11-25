@@ -14,7 +14,7 @@ struct User: Decodable {
     var email: String
     var favCafe: String
     var favDrink: String
-//    var profilePic: UIImageView causes type issues
+    var profilePicURL: String? // Optional URL to store the profile picture
     var visitedCafes: [Cafe]
     var reviews: [Review]
 }

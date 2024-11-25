@@ -48,7 +48,7 @@ extension RegisterViewController{
                 Auth.auth().createUser(withEmail: email, password: password) { result, error in
                     if error == nil {
                         self.setNameOfTheUserInFirebaseAuth(name: name)
-                        let user = User(id: email, name: name, email: email, chats: [])
+                        let user = User(id: email, username: name, email: email, favCafe: "", favDrink: "", visitedCafes :[], reviews:[])
                         self.saveContactToFireStore(user: user)
                     } else {
                         self.showAlert(message: error?.localizedDescription ?? "Unknown error")
@@ -90,30 +90,35 @@ extension RegisterViewController{
     
     
     //MARK: adds a User to Firestore
-    func saveContactToFireStore(user: User){
-        // User the email as the document ID in Firestore
+    func saveContactToFireStore(user: User) {
         let userDocument = database.collection("users").document(user.email)
         
-        //MARK: show progress indicator...
+        // Show activity indicator
         showActivityIndicator()
         
+        // Convert User object to dictionary manually
+        let userData: [String: Any] = [
+            "id": user.id ?? "",
+            "username": user.username,
+            "email": user.email,
+            "favCafe": user.favCafe,
+            "favDrink": user.favDrink,
+            "visitedCafes": user.visitedCafes.map { $0.toDictionary() }, // Assumes Cafe has a toDictionary() method
+            "reviews": user.reviews.map { $0.toDictionary() }           // Assumes Review has a toDictionary() method
+        ]
+        
         // Save user data to Firestore
-        do {
-            try userDocument.setData(from: user, completion: { error in
-                if let error = error {
-                    print("Error saving user to Firestore: \(error.localizedDescription)")
-                } else {
-                    //MARK: hide progress indicator...
-                    self.hideActivityIndicator()
-                    
-                    // Go back to previous screen
-                    self.navigationController?.popViewController(animated: true)
-                }
-            })
-        } catch {
-            print("Error serializing user data: \(error.localizedDescription)")
+        userDocument.setData(userData) { error in
+            self.hideActivityIndicator()
+            
+            if let error = error {
+                self.showAlert(message: "Error saving user to Firestore: \(error.localizedDescription)")
+            } else {
+                self.navigationController?.popViewController(animated: true)
+            }
         }
     }
+
     // MARK: Validates email format using regular expression
     private func isValidEmail(_ email: String) -> Bool {
         let emailRegex = "^[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$"

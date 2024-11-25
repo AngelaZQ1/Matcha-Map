@@ -13,6 +13,18 @@ struct Cafe: Decodable {
     var name: String
     var avgRating: Int
     var reviews: [Review]
-//    var images: figure out type that works with firebase storage
+    var images: [String] = [] // Array of image URLs
 }
+
+extension Cafe {
+    func toDictionary() -> [String: Any] {
+        return [
+            "id": id ?? "",
+            "name": name,
+            "avgRating": avgRating,
+            "reviews": reviews.map { $0.toDictionary() } // Convert each Review to a dictionary
+        ]
+    }
+}
+
 
