@@ -1,3 +1,11 @@
+//
+//  ProfilePageView.swift
+//  Matcha Map
+//
+//  Created by Angela Zheng on 11/20/24.
+//
+
+import Foundation
 import UIKit
 
 class ProfilePageView: UIView {
@@ -9,21 +17,7 @@ class ProfilePageView: UIView {
     var favDrinkLabel: UILabel!
     var favDrink: UILabel!
     
-    // Add a property to store the profile image URL (as a String)
-    var profileImageURLString: String?
-    
-    // Default image to use if profilePicURL is nil or invalid
-    let defaultImage = UIImage(systemName: "photo")  // Default image (System icon)
-    
-    // Default initializer
     override init(frame: CGRect) {
-        super.init(frame: frame)
-        self.backgroundColor = .white
-    }
-    
-    // Modify the initializer to accept the profile image URL string
-    init(frame: CGRect, profileImageURLString: String?) {
-        self.profileImageURLString = profileImageURLString  // Set the passed image URL string
         super.init(frame: frame)
         self.backgroundColor = .white
         
@@ -35,49 +29,42 @@ class ProfilePageView: UIView {
         setupFavDrinkLabel()
         setupFavDrink()
         initConstraints()
-        
-        // Load the profile image from the URL string
-        loadProfileImage()
     }
     
     func setupProfilePic() {
         profilePic = UIImageView()
+        profilePic.image = UIImage(systemName: "photo")
         profilePic.contentMode = .scaleToFill
         profilePic.clipsToBounds = true
         profilePic.layer.cornerRadius = 10
         profilePic.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(profilePic)
     }
-    
     func setupUsername() {
         username = UILabel()
         username.font = UIFont.boldSystemFont(ofSize: 24)
         username.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(username)
     }
-    
-    func setupNumReviews() {
+    func setupNumReviews(){
         numReviews = UILabel()
         numReviews.font = UIFont.systemFont(ofSize: 18)
         numReviews.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(numReviews)
     }
-    
-    func setupFavCafeLabel() {
+    func setupFavCafeLabel(){
         favCafeLabel = UILabel()
         favCafeLabel.text = "Favorite Cafe"
         favCafeLabel.font = UIFont.systemFont(ofSize: 18)
         favCafeLabel.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(favCafeLabel)
     }
-    
-    func setupFavCafe() {
+    func setupFavCafe(){
         favCafe = UILabel()
         favCafe.font = UIFont.systemFont(ofSize: 18)
         favCafe.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(favCafe)
     }
-    
     func setupFavDrinkLabel() {
         favDrinkLabel = UILabel()
         favDrinkLabel.text = "Favorite Drink"
@@ -85,7 +72,6 @@ class ProfilePageView: UIView {
         favDrinkLabel.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(favDrinkLabel)
     }
-    
     func setupFavDrink() {
         favDrink = UILabel()
         favDrink.font = UIFont.systemFont(ofSize: 18)
@@ -93,7 +79,7 @@ class ProfilePageView: UIView {
         self.addSubview(favDrink)
     }
     
-    func initConstraints() {
+    func initConstraints(){
         NSLayoutConstraint.activate([
             profilePic.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 32),
             profilePic.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
@@ -116,31 +102,6 @@ class ProfilePageView: UIView {
             favDrink.topAnchor.constraint(equalTo: favDrinkLabel.bottomAnchor, constant: 8),
             favDrink.leadingAnchor.constraint(equalTo: favCafeLabel.leadingAnchor),
         ])
-    }
-    
-    // Load the profile image from the URL string asynchronously
-    func loadProfileImage() {
-        // Use default image if profileImageURLString is nil or invalid
-        if let urlString = profileImageURLString, let url = URL(string: urlString) {
-            // If the URL is valid, fetch the image from the URL
-            URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
-                guard let data = data, error == nil else {
-                    print("Error loading image from URL: \(String(describing: error))")
-                    return
-                }
-                
-                DispatchQueue.main.async {
-                    if let image = UIImage(data: data) {
-                        self?.profilePic.image = image
-                    } else {
-                        self?.profilePic.image = self?.defaultImage
-                    }
-                }
-            }.resume()
-        } else {
-            // Use default image if the URL is invalid or nil
-            profilePic.image = defaultImage
-        }
     }
     
     required init?(coder: NSCoder) {
