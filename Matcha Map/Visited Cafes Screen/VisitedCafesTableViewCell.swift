@@ -10,6 +10,7 @@ import UIKit
 class VisitedCafesTableViewCell: UITableViewCell {
     var wrapperCellView: UIView!
     var cafeNameLabel: UILabel!
+    var yourRatingLabel: UILabel!
     var starRating: StarRatingView!
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -17,6 +18,7 @@ class VisitedCafesTableViewCell: UITableViewCell {
         
         setupWrapperCellView()
         setupLabelName()
+        setupYourRatingLabel()
         setupStarRating()
         
         initConstraints()
@@ -34,6 +36,14 @@ class VisitedCafesTableViewCell: UITableViewCell {
         wrapperCellView.layer.shadowOpacity = 0.7
         wrapperCellView.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(wrapperCellView)
+    }
+    
+    func setupYourRatingLabel(){
+        yourRatingLabel = UILabel()
+        yourRatingLabel.text = "Your rating"
+        yourRatingLabel.font = UIFont.systemFont(ofSize: 12)
+        yourRatingLabel.translatesAutoresizingMaskIntoConstraints = false
+        wrapperCellView.addSubview(yourRatingLabel)
     }
     
     func setupLabelName(){
@@ -59,11 +69,14 @@ class VisitedCafesTableViewCell: UITableViewCell {
             cafeNameLabel.topAnchor.constraint(equalTo: wrapperCellView.topAnchor, constant: 8),
             cafeNameLabel.leadingAnchor.constraint(equalTo: wrapperCellView.leadingAnchor, constant: 10),
             
+            yourRatingLabel.bottomAnchor.constraint(equalTo: starRating.topAnchor),
+            yourRatingLabel.leadingAnchor.constraint(equalTo: cafeNameLabel.leadingAnchor),
+            
             starRating.leadingAnchor.constraint(equalTo: wrapperCellView.leadingAnchor, constant: 110),
             starRating.bottomAnchor.constraint(equalTo: wrapperCellView.bottomAnchor, constant: -8),
             starRating.heightAnchor.constraint(equalToConstant: 40),
             
-            wrapperCellView.heightAnchor.constraint(equalToConstant: 90)
+            wrapperCellView.heightAnchor.constraint(equalToConstant: 100)
         ])
         
     }
