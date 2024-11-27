@@ -34,6 +34,12 @@ extension ViewController {
             name: Notification.Name("switchToRegister"),
             object: nil
         )
+        notificationCenter.addObserver(
+            self,
+            selector: #selector(handleAddReview(_:)),
+            name: Notification.Name("addReview"),
+            object: nil
+        )
     }
     
     @objc private func handleLogIn(_ notification: Notification) {
@@ -59,5 +65,14 @@ extension ViewController {
         self.navigationController?.popViewController(animated: true)
         let registerVC = RegisterViewController()
         self.navigationController?.pushViewController(registerVC, animated: true)
+    }
+    @objc private func handleAddReview(_ notification: Notification) {
+        if let userInfo = notification.userInfo,
+           let cafe = userInfo["cafe"]{
+            print("cafe", cafe)
+            let addReviewVC = AddReviewViewController()
+            addReviewVC.cafe = cafe as! Cafe
+            self.navigationController?.pushViewController(addReviewVC, animated: true)
+        }
     }
 }
