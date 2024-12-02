@@ -33,7 +33,6 @@ class ProfilePageView: UIView {
     
     func setupProfilePic() {
         profilePic = UIImageView()
-        profilePic.image = UIImage(systemName: "photo")
         profilePic.contentMode = .scaleToFill
         profilePic.clipsToBounds = true
         profilePic.layer.cornerRadius = 10

@@ -28,7 +28,17 @@ class ProfilePageViewController: UIViewController {
         profilePage.numReviews.text = "\(String(user!.reviews.count)) reviews"
         profilePage.favCafe.text = user!.favCafe
         profilePage.favDrink.text = user!.favDrink
-        
+        // Load profile picture if URL is available
+        if let profilePicURLString = user?.profilePicURL,
+          let profilePicURL = URL(string: profilePicURLString) {
+           loadImage(from: profilePicURL) { [weak self] image in
+               DispatchQueue.main.async {
+                   self?.profilePage.profilePic.image = image
+               }
+           }
+       } else {
+           profilePage.profilePic.image = UIImage(systemName: "person.circle") // Placeholder
+       }
         let editProfileButton = UIBarButtonItem(title: "Edit Profile", style: .done, target: self, action: #selector(onEditButtonTapped))
         navigationItem.rightBarButtonItem = editProfileButton
         
@@ -38,6 +48,19 @@ class ProfilePageViewController: UIViewController {
             selector: #selector(handleUpdateUser(notification:)),
             name: Notification.Name("updateUser"),
             object: nil)
+    }
+    
+    // MARK: - Load Image from URL
+    private func loadImage(from url: URL, completion: @escaping (UIImage?) -> Void) {
+        let task = URLSession.shared.dataTask(with: url) { data, response, error in
+            guard let data = data, error == nil, let image = UIImage(data: data) else {
+                print("Failed to load image from URL: \(url.absoluteString)")
+                completion(nil)
+                return
+            }
+            completion(image)
+        }
+        task.resume()
     }
     
     // MARK: Show Edit Profile screen
