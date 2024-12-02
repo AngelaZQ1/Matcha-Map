@@ -99,11 +99,13 @@ class ViewController: UIViewController {
     }
     
     @objc func onButtonCurrentLocationTapped(){
-        if let uwLocation = locationManager.location{
-            mainScreen.mapView.centerToLocation(location: uwLocation)
+            if let uwLocation = locationManager.location{
+                mainScreen.mapView.centerToLocation(location: uwLocation)
+            }
+            
         }
-        
-    }
+
+
     
 //    @objc func onButtonSearchTapped(){
 //        
