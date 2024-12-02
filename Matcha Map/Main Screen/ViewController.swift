@@ -28,7 +28,11 @@ class ViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+        if Auth.auth().currentUser == nil {
+                    // If not logged in, show login screen
+                    let loginVC = LogInViewController()
+                    self.navigationController?.pushViewController(loginVC, animated: false)
+                }
         // Listen to authentication state changes
         handleAuth = Auth.auth().addStateDidChangeListener { auth, user in
             if let user = user {
@@ -46,6 +50,7 @@ class ViewController: UIViewController {
                 // Handle sign-out
                 self.currentUser = nil
 //                self.mainScreen.labelText.text = "Please sign in!"
+                
                 
                 // Reset chat list and reload table
                 self.cafeList.removeAll()
