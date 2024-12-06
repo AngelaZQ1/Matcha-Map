@@ -13,15 +13,18 @@ class RegisterView: UIView {
     var textFieldPassword: UITextField!
     var textFieldRepeatPassword: UITextField!
     var buttonRegister: UIButton!
+    var logInInsteadButton:UIButton!
     
     override init(frame: CGRect){
         super.init(frame: frame)
         self.backgroundColor = .white
+        
         setuptextFieldName()
         setuptextFieldEmail()
         setuptextFieldPassword()
         setuptextFieldRepeatPassword()
         setupbuttonRegister()
+        setupLogInInsteadButton()
         
         initConstraints()
     }
@@ -67,10 +70,22 @@ class RegisterView: UIView {
     
     func setupbuttonRegister(){
         buttonRegister = UIButton(type: .system)
-        buttonRegister.setTitle("Register", for: .normal)
         buttonRegister.titleLabel?.font = .boldSystemFont(ofSize: 16)
+        buttonRegister.setTitle("Register", for: .normal)
         buttonRegister.translatesAutoresizingMaskIntoConstraints = false
+        buttonRegister.backgroundColor = .blue
+        buttonRegister.setTitleColor(.white, for: .normal)
+        buttonRegister.layer.cornerRadius = 8
+        buttonRegister.clipsToBounds = true
         self.addSubview(buttonRegister)
+    }
+    
+    func setupLogInInsteadButton(){
+        logInInsteadButton = UIButton(type: .system)
+        logInInsteadButton.titleLabel?.font = .boldSystemFont(ofSize: 14)
+        logInInsteadButton.setTitle("Log In Instead", for: .normal)
+        logInInsteadButton.translatesAutoresizingMaskIntoConstraints = false
+        self.addSubview(logInInsteadButton)
     }
     
     func initConstraints(){
@@ -91,8 +106,13 @@ class RegisterView: UIView {
             textFieldRepeatPassword.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
             textFieldRepeatPassword.widthAnchor.constraint(equalTo: self.safeAreaLayoutGuide.widthAnchor, multiplier: 0.9),
             
-            buttonRegister.topAnchor.constraint(equalTo: textFieldRepeatPassword.bottomAnchor, constant: 32),
+            buttonRegister.bottomAnchor.constraint(equalTo: logInInsteadButton.topAnchor, constant: -8),
+            buttonRegister.widthAnchor.constraint(equalTo: self.safeAreaLayoutGuide.widthAnchor, multiplier: 0.9),
             buttonRegister.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
+            buttonRegister.heightAnchor.constraint(equalToConstant: 50),
+
+            logInInsteadButton.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -8),
+            logInInsteadButton.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
         ])
     }
     

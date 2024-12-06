@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		0B2233B22CEE769C0049867E /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 0B2233B12CEE769C0049867E /* FirebaseAuth */; };
 		0B2233B42CEE769C0049867E /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 0B2233B32CEE769C0049867E /* FirebaseFirestore */; };
+		1123385D2CF51289003B98FB /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 1123385C2CF51289003B98FB /* FirebaseStorage */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -72,6 +73,7 @@
 			files = (
 				0B2233B22CEE769C0049867E /* FirebaseAuth in Frameworks */,
 				0B2233B42CEE769C0049867E /* FirebaseFirestore in Frameworks */,
+				1123385D2CF51289003B98FB /* FirebaseStorage in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -134,6 +136,7 @@
 			packageProductDependencies = (
 				0B2233B12CEE769C0049867E /* FirebaseAuth */,
 				0B2233B32CEE769C0049867E /* FirebaseFirestore */,
+				1123385C2CF51289003B98FB /* FirebaseStorage */,
 			);
 			productName = "Matcha Map";
 			productReference = 0B74C77D2CD968CA00D644C9 /* Matcha Map.app */;
@@ -597,6 +600,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0B2233B02CEE769C0049867E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseFirestore;
+		};
+		1123385C2CF51289003B98FB /* FirebaseStorage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0B2233B02CEE769C0049867E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseStorage;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

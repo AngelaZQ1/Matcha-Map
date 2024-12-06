@@ -17,14 +17,19 @@ class RegisterViewController: UIViewController {
     
     let database = Firestore.firestore()
     
+    let notificationCenter = NotificationCenter.default
+    
     override func loadView() {
         view = registerView
     }
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationController?.navigationBar.prefersLargeTitles = true
-        registerView.buttonRegister.addTarget(self, action: #selector(onRegisterTapped), for: .touchUpInside)
         title = "Register"
+        navigationController?.navigationBar.prefersLargeTitles = true
+        
+        registerView.buttonRegister.addTarget(self, action: #selector(onRegisterTapped), for: .touchUpInside)
+        registerView.logInInsteadButton.addTarget(self, action: #selector(onSwitchToLogInTapped), for: .touchUpInside)
+        
         
         // Hide keybaord when tapped outside
         let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(hideKeyboardOnTap))
@@ -35,6 +40,21 @@ class RegisterViewController: UIViewController {
     @objc func onRegisterTapped(){
         //MARK: creating a new user on Firebase...
         registerNewAccount()
+    }
+    
+    @objc func onSwitchToLogInTapped(){
+        notificationCenter.post(
+            name: Notification.Name("switchToLogIn"),
+            object: nil,
+            userInfo: nil)
+        clearFields()
+    }
+    
+    private func clearFields() {
+        registerView.textFieldName.text = ""
+        registerView.textFieldEmail.text = ""
+        registerView.textFieldPassword.text = ""
+        registerView.textFieldRepeatPassword.text = ""
     }
     
     @objc func hideKeyboardOnTap(){

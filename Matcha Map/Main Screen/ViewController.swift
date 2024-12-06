@@ -20,6 +20,7 @@ class ViewController: UIViewController {
     let database = Firestore.firestore()
     
     let locationManager = CLLocationManager()
+    let notificationCenter = NotificationCenter.default
     
     override func loadView() {
         view = mainScreen
@@ -27,7 +28,11 @@ class ViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+        if Auth.auth().currentUser == nil {
+                    // If not logged in, show login screen
+                    let loginVC = LogInViewController()
+                    self.navigationController?.pushViewController(loginVC, animated: false)
+                }
         // Listen to authentication state changes
         handleAuth = Auth.auth().addStateDidChangeListener { auth, user in
             if let user = user {
@@ -46,10 +51,11 @@ class ViewController: UIViewController {
                 self.currentUser = nil
 //                self.mainScreen.labelText.text = "Please sign in!"
                 
+                
                 // Reset chat list and reload table
                 self.cafeList.removeAll()
-                self.mainScreen.tableViewChats.reloadData()
-                self.setupRightBarButton(isLoggedin: false)
+                //self.mainScreen.tableViewChats.reloadData()
+                //self.setupRightBarButton(isLoggedin: false)
             }
         }
     }
@@ -94,14 +100,54 @@ class ViewController: UIViewController {
         mainScreen.mapView.addAnnotation(northeastern)
         mainScreen.mapView.delegate = self
         
+        addNotificationCenterObservers()
     }
     
     @objc func onButtonCurrentLocationTapped(){
-        if let uwLocation = locationManager.location{
-            mainScreen.mapView.centerToLocation(location: uwLocation)
+            if let uwLocation = locationManager.location{
+                mainScreen.mapView.centerToLocation(location: uwLocation)
+            }
+            
         }
-        
-    }
+    private func fetchLocationsFromFirestore() {
+            // Fetch documents from "locations" collection
+            database.collection("cafes").getDocuments { snapshot, error in
+                if let error = error {
+                    print("Error fetching locations: \(error.localizedDescription)")
+                    return
+                }
+                
+                guard let documents = snapshot?.documents else {
+                    print("No locations found")
+                    return
+                }
+                
+                // Parse documents into Place objects and add to the map
+                for document in documents {
+                    let data = document.data()
+                    
+                    guard let title = data["title"] as? String,
+                          let latitude = data["latitude"] as? Double,
+                          let longitude = data["longitude"] as? Double,
+                          let info = data["info"] as? String else {
+                        print("Invalid data format for document: \(document.documentID)")
+                        continue
+                    }
+                    
+                    let place = Place(
+                        title: title,
+                        coordinate: CLLocationCoordinate2D(latitude: latitude, longitude: longitude),
+                        info: info
+                    )
+                    
+                    // Add annotation to the map
+                    self.mainScreen.mapView.addAnnotation(place)
+                    self.cafeList.append(place)
+                }
+            }
+        }
+
+
     
     @objc func setupBottomSheet(){
         
