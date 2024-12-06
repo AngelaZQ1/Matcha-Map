@@ -109,6 +109,43 @@ class ViewController: UIViewController {
             }
             
         }
+    private func fetchLocationsFromFirestore() {
+            // Fetch documents from "locations" collection
+            database.collection("cafes").getDocuments { snapshot, error in
+                if let error = error {
+                    print("Error fetching locations: \(error.localizedDescription)")
+                    return
+                }
+                
+                guard let documents = snapshot?.documents else {
+                    print("No locations found")
+                    return
+                }
+                
+                // Parse documents into Place objects and add to the map
+                for document in documents {
+                    let data = document.data()
+                    
+                    guard let title = data["title"] as? String,
+                          let latitude = data["latitude"] as? Double,
+                          let longitude = data["longitude"] as? Double,
+                          let info = data["info"] as? String else {
+                        print("Invalid data format for document: \(document.documentID)")
+                        continue
+                    }
+                    
+                    let place = Place(
+                        title: title,
+                        coordinate: CLLocationCoordinate2D(latitude: latitude, longitude: longitude),
+                        info: info
+                    )
+                    
+                    // Add annotation to the map
+                    self.mainScreen.mapView.addAnnotation(place)
+                    self.cafeList.append(place)
+                }
+            }
+        }
 
 
     

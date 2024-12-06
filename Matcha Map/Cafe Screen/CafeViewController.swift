@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import MapKit
 
 class CafeViewController: UIViewController {
     let cafeView = CafeView()
@@ -28,7 +29,14 @@ class CafeViewController: UIViewController {
         cafeView.numberRatingLabel.text = "4.2"
         cafeView.numReviewsLabel.text = "(10 reviews)"
         
-        var matchaMaiko = Cafe(name: "Matcha Maiko", avgRating: 3, reviews: [])
+        var matchaMaiko = Cafe(
+            id: nil,
+            name: "Matcha Maiko",
+            coordinate: CLLocationCoordinate2D(latitude: 42.34269917074093, longitude: -71.09704044804509),
+            avgRating: 3.0,
+            reviews: [],
+            images: []
+        )
         
         cafe = matchaMaiko
         
