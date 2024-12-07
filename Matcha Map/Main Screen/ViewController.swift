@@ -89,7 +89,7 @@ class ViewController: UIViewController {
         //MARK: center the map view to current location when the app loads...
         onButtonCurrentLocationTapped()
         
-        
+        fetchLocationsFromFirestore()
         //MARK: Annotating Northeastern University...
         let northeastern = Place(
             title: "Northeastern University",
@@ -126,17 +126,19 @@ class ViewController: UIViewController {
                 for document in documents {
                     let data = document.data()
                     
-                    guard let title = data["title"] as? String,
-                          let latitude = data["latitude"] as? Double,
-                          let longitude = data["longitude"] as? Double,
-                          let info = data["info"] as? String else {
-                        print("Invalid data format for document: \(document.documentID)")
-                        continue
-                    }
-                    
+                    guard let name = data["name"] as? String,
+                              let avgRating = data["avgRating"] as? Double,
+                              let coordinateData = data["coordinate"] as? GeoPoint else {
+                            print("Invalid data format for document: \(document.documentID)")
+                            continue
+                        }
+                        
+                        // Extract coordinate from GeoPoint
+                        let coordinate = CLLocationCoordinate2D(latitude: coordinateData.latitude, longitude: coordinateData.longitude)
+                    let info = String(avgRating) + "rating out of five"
                     let place = Place(
-                        title: title,
-                        coordinate: CLLocationCoordinate2D(latitude: latitude, longitude: longitude),
+                        title: name,
+                        coordinate: coordinate,
                         info: info
                     )
                     
