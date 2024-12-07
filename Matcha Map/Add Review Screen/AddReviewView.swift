@@ -9,6 +9,7 @@ import UIKit
 
 class AddReviewView: UIView {
     var overallRatingLabel: UILabel!
+    var ratingSlider: UISlider!
     var titleLabel: UILabel!
     var titleTextField: UITextField!
     var detailsLabel: UILabel!
@@ -20,6 +21,7 @@ class AddReviewView: UIView {
         self.backgroundColor = .white
         
         setupOverallRatingLabel()
+        setupRatingSlider()
         setupTitleLabel()
         setupTitleTextField()
         setupDetailsLabel()
@@ -28,33 +30,49 @@ class AddReviewView: UIView {
         
         initConstraints()
     }
-    func setupOverallRatingLabel(){
+    
+    func setupOverallRatingLabel() {
         overallRatingLabel = UILabel()
-        overallRatingLabel.font = UIFont.systemFont(ofSize: 18)
+        overallRatingLabel.font = UIFont.systemFont(ofSize: 18, weight: .bold)
+        overallRatingLabel.textAlignment = .center
+        overallRatingLabel.text = "0" // Default value for the rating
         overallRatingLabel.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(overallRatingLabel)
     }
-    func setupTitleLabel(){
+    
+    func setupRatingSlider() {
+        ratingSlider = UISlider()
+        ratingSlider.minimumValue = 0
+        ratingSlider.maximumValue = 5
+        ratingSlider.value = 0 // Default slider value
+        ratingSlider.translatesAutoresizingMaskIntoConstraints = false
+        self.addSubview(ratingSlider)
+    }
+    
+    func setupTitleLabel() {
         titleLabel = UILabel()
         titleLabel.text = "Give your review a title:"
         titleLabel.font = UIFont.systemFont(ofSize: 16)
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(titleLabel)
     }
-    func setupTitleTextField(){
+    
+    func setupTitleTextField() {
         titleTextField = UITextField()
         titleTextField.borderStyle = .roundedRect
         titleTextField.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(titleTextField)
     }
-    func setupDetailsLabel(){
+    
+    func setupDetailsLabel() {
         detailsLabel = UILabel()
         detailsLabel.text = "Add some more details.."
         detailsLabel.font = UIFont.systemFont(ofSize: 16)
         detailsLabel.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(detailsLabel)
     }
-    func setupDetailsTextView(){
+    
+    func setupDetailsTextView() {
         detailsTextView = UITextView()
         detailsTextView.isScrollEnabled = false // Allow the height to expand with content
         detailsTextView.layer.borderWidth = 1
@@ -63,7 +81,8 @@ class AddReviewView: UIView {
         detailsTextView.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(detailsTextView)
     }
-    func setupPostReviewButton(){
+    
+    func setupPostReviewButton() {
         postReviewButton = UIButton(type: .system)
         postReviewButton.titleLabel?.font = .boldSystemFont(ofSize: 16)
         postReviewButton.setTitle("Post Review", for: .normal)
@@ -75,13 +94,17 @@ class AddReviewView: UIView {
         self.addSubview(postReviewButton)
     }
     
-    func initConstraints(){
+    func initConstraints() {
         NSLayoutConstraint.activate([
             overallRatingLabel.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
             overallRatingLabel.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 16),
             
+            ratingSlider.topAnchor.constraint(equalTo: overallRatingLabel.bottomAnchor, constant: 16),
+            ratingSlider.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 12),
+            ratingSlider.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -12),
+            
             titleLabel.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 12),
-            titleLabel.topAnchor.constraint(equalTo: overallRatingLabel.bottomAnchor, constant: 32),
+            titleLabel.topAnchor.constraint(equalTo: ratingSlider.bottomAnchor, constant: 32),
             
             titleTextField.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 12),
             titleTextField.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -12),
@@ -102,10 +125,7 @@ class AddReviewView: UIView {
         ])
     }
     
-    
-    //MARK: initializing constraints...
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
 }
