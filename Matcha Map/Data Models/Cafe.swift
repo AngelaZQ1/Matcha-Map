@@ -1,37 +1,15 @@
-//
-//  Cafe.swift
-//  Matcha Map
-//
-//  Created by Angela Zheng on 11/20/24.
-//
-
 import Foundation
 import FirebaseFirestore
 import MapKit
 
-// Image struct with toDictionary method
-struct Image: Decodable {
-    let url: String
-    let description: String
-}
-
-extension Image {
-    func toDictionary() -> [String: Any] {
-        return [
-            "url": url,
-            "description": description
-        ]
-    }
-}
-
 // Cafe struct with Decodable conformance
 struct Cafe: Decodable {
     let id: String?
-    let name: String
-    let coordinate: CLLocationCoordinate2D
-    let avgRating: Double
+    var name: String
+    var coordinate: CLLocationCoordinate2D
+    var avgRating: Double
     var reviews: [Review]
-    var images: [Image]
+    var images: [String]  // Array of image URLs as strings
     
     enum CodingKeys: String, CodingKey {
         case id
@@ -43,7 +21,7 @@ struct Cafe: Decodable {
     }
 
     // Custom initializer for direct instantiation
-    init(id: String? = nil, name: String, coordinate: CLLocationCoordinate2D, avgRating: Double, reviews: [Review], images: [Image]) {
+    init(id: String? = nil, name: String, coordinate: CLLocationCoordinate2D, avgRating: Double, reviews: [Review], images: [String]) {
         self.id = id
         self.name = name
         self.coordinate = coordinate
@@ -52,7 +30,7 @@ struct Cafe: Decodable {
         self.images = images
     }
 
-    // Decoding initializer remains unchanged
+    // Decoding initializer for Firestore data
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
@@ -71,10 +49,10 @@ struct Cafe: Decodable {
         
         self.avgRating = try container.decode(Double.self, forKey: .avgRating)
         self.reviews = try container.decode([Review].self, forKey: .reviews)
-        self.images = try container.decode([Image].self, forKey: .images)
+        self.images = try container.decode([String].self, forKey: .images) // Array of URLs
     }
 
-    // toDictionary method remains unchanged
+    // toDictionary method for Firestore saving
     func toDictionary() -> [String: Any] {
         return [
             "id": id ?? "",
@@ -83,9 +61,7 @@ struct Cafe: Decodable {
             "longitude": coordinate.longitude,
             "avgRating": avgRating,
             "reviews": reviews.map { $0.toDictionary() },
-            "images": images.map { $0.toDictionary() }
+            "images": images // Array of URLs as strings
         ]
     }
 }
-
-

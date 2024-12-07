@@ -154,18 +154,18 @@ class ViewController: UIViewController {
     @objc func setupBottomSheet(){
         
         //MARK: Setting up bottom search sheet...
-        let searchViewController  = SearchViewController()
-        searchViewController.delegateToMapView = self
-        
-        let navForSearch = UINavigationController(rootViewController: searchViewController)
-        navForSearch.modalPresentationStyle = .pageSheet
-        
-        if let searchBottomSheet = navForSearch.sheetPresentationController{
-            searchBottomSheet.detents = [.medium(), .large()]
-            searchBottomSheet.prefersGrabberVisible = true
-        }
-        
-        present(navForSearch, animated: true)
+//        let searchViewController  = SearchViewController()
+//        searchViewController.delegateToMapView = self
+//        
+//        let navForSearch = UINavigationController(rootViewController: searchViewController)
+//        navForSearch.modalPresentationStyle = .pageSheet
+//        
+//        if let searchBottomSheet = navForSearch.sheetPresentationController{
+//            searchBottomSheet.detents = [.medium(), .large()]
+//            searchBottomSheet.prefersGrabberVisible = true
+//        }
+//        
+//        present(navForSearch, animated: true)
     }
     
     //MARK: show selected place on map...
