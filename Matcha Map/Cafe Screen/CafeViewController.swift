@@ -27,7 +27,7 @@ class CafeViewController: UIViewController {
         // Set the title to the cafe's name if available
         title = cafe.name ?? "Cafe Details"
 
-        self.fetchReviews()
+        self.fetchReviews(for: cafe.id ?? "")
         
         // Set up table view
         cafeView.reviewsTableView.dataSource = self
@@ -47,30 +47,49 @@ class CafeViewController: UIViewController {
         )
     }
 
-    private func fetchReviews() {
+    private func fetchReviews(for cafeId: String) {
         let db = Firestore.firestore()
 
-        // Fetch reviews for the cafe using the cafe's document ID
-        db.collection("cafes").document(cafe.id!).collection("reviews").getDocuments { snapshot, error in
+        // Fetch the cafe document to get the review IDs
+        db.collection("cafes").document(cafeId).getDocument { document, error in
             if let error = error {
-                print("Error fetching reviews: \(error.localizedDescription)")
+                print("Error fetching cafe document: \(error.localizedDescription)")
                 return
             }
+
+            guard let document = document, document.exists,
+                  let reviewIds = document.data()?["reviews"] as? [String] else {
+                print("No reviews found or reviews field is missing.")
+                return
+            }
+
+            // Fetch each review using the review IDs
+            let reviewGroup = DispatchGroup()
+            var fetchedReviews = [Review]()
             
-            guard let documents = snapshot?.documents else {
-                print("No reviews found.")
-                return
+            for reviewId in reviewIds {
+                reviewGroup.enter()
+                db.collection("reviews").document(reviewId).getDocument { reviewDocument, error in
+                    if let error = error {
+                        print("Error fetching review \(reviewId): \(error.localizedDescription)")
+                    } else if let reviewDocument = reviewDocument, reviewDocument.exists {
+                        if let reviewData = reviewDocument.data(),
+                           let review = self.parseReview(from: reviewData) {
+                            fetchedReviews.append(review)
+                        }
+                    }
+                    reviewGroup.leave()
+                }
             }
 
-            // Parse reviews into `Review` objects
-            self.reviews = documents.compactMap { doc in
-                let data = doc.data()
-                return self.parseReview(from: data)
-            }
+            // Wait for all review fetch requests to complete
+            reviewGroup.notify(queue: .main) {
+                self.reviews = fetchedReviews
 
-            // Update UI
-            self.cafeView.numReviewsLabel.text = "(\(self.reviews.count) reviews)"
-            self.cafeView.reviewsTableView.reloadData()
+                // Update UI
+                self.cafeView.numReviewsLabel.text = "(\(self.reviews.count) reviews)"
+                self.cafeView.reviewsTableView.reloadData()
+            }
         }
     }
 
@@ -110,7 +129,7 @@ class CafeViewController: UIViewController {
     }
     
     @objc func reloadReviewsTable(_ notification: Notification) {
-        self.fetchReviews()
+        self.fetchReviews(for: cafe.id ?? "")
     }
 }
 
