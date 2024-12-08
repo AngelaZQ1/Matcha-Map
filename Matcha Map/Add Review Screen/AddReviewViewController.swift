@@ -47,7 +47,7 @@ class AddReviewViewController: UIViewController {
         }
         
         // Retrieve userId from authenticated user
-        let userId = user.uid
+        let userId = user.email
         
         // Validate form inputs
         guard let title = addReviewView.titleTextField.text, !title.isEmpty,
@@ -79,7 +79,6 @@ class AddReviewViewController: UIViewController {
             self.navigationController?.popViewController(animated: true)
     }
     
-    
     func updateCafeReviews(with reviewData: [String: Any]) {
         let db = Firestore.firestore()
         
@@ -103,8 +102,11 @@ class AddReviewViewController: UIViewController {
                 // Extract the cafe's id from the document
                 let cafeId = document.documentID
                 
-                // Add the review to the reviews subcollection of the cafe
-                let reviewRef = db.collection("cafes").document(cafeId).collection("reviews").addDocument(data: reviewData) { error in
+                // Declare reviewRef outside the closure
+                let reviewRef = db.collection("reviews").document()
+                
+                // Add the review to the reviews collection (separate collection)
+                reviewRef.setData(reviewData) { error in
                     if let error = error {
                         print("Error adding review: \(error.localizedDescription)")
                         return
@@ -112,11 +114,47 @@ class AddReviewViewController: UIViewController {
                     
                     print("Review successfully added")
                     
+                    // After adding the review, update the cafe's reviews array with the review ID
+                    self.addReviewIdToCafe(cafeId: cafeId, reviewRef: reviewRef)
+                    
                     // Optionally, update the cafe's average rating
                     self.updateCafeAverageRating(for: cafeId, db: db)
                 }
             }
     }
+
+    func addReviewIdToCafe(cafeId: String, reviewRef: DocumentReference) {
+        let db = Firestore.firestore()
+        
+        // Fetch the existing reviews array from the cafe document
+        db.collection("cafes").document(cafeId).getDocument { document, error in
+            if let error = error {
+                print("Error fetching cafe document: \(error.localizedDescription)")
+                return
+            }
+            
+            guard let document = document, document.exists,
+                  var reviews = document.data()?["reviews"] as? [String] else {
+                print("Error: No reviews field found in cafe document.")
+                return
+            }
+            
+            // Add the new review ID to the reviews array
+            reviews.append(reviewRef.documentID)
+            
+            // Update the cafe document with the new reviews array
+            db.collection("cafes").document(cafeId).updateData([
+                "reviews": reviews
+            ]) { error in
+                if let error = error {
+                    print("Error updating reviews array in cafe document: \(error.localizedDescription)")
+                } else {
+                    print("Successfully updated reviews array with new review ID")
+                }
+            }
+        }
+    }
+
 
 
     func updateCafeAverageRating(for cafeId: String, db: Firestore) {
