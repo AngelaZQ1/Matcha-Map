@@ -33,7 +33,7 @@ class ViewController: UIViewController {
                     self.cafeList.removeAll()
                     self.fetchLocationsFromFirestore()
                     // Setup Tab Bar
-                    self.setupTabBarController()
+//                    self.setupTabBarController()
                 }
             } else {
                 self.currentUser = nil

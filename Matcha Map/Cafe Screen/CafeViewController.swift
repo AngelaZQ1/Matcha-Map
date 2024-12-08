@@ -14,7 +14,6 @@
         let notificationCenter = NotificationCenter.default
         let db = Firestore.firestore() // Firestore database instance
         
-        var cafeName: String?  // Variable to hold the passed cafe name
         var cafe: Cafe!
         var reviews = [Review]()
         
@@ -26,47 +25,18 @@
             super.viewDidLoad()
 
             // Set the title to the cafe's name if available
-            title = cafeName ?? "Cafe Details"
+            title = cafe.name ?? "Cafe Details"
 
             // Set up table view
             cafeView.reviewsTableView.dataSource = self
             cafeView.reviewsTableView.delegate = self
+            cafeView.cafeNameLabel.text = cafe.name
+            cafeView.numReviewsLabel.text = "\(cafe.reviews?.count ?? 0) reviews"
+            cafeView.numberRatingLabel.text = "\(cafe.avgRating)"
 
-            // Fetch cafe details from Firestore
-            if let cafeName = cafeName {
-                fetchCafeDetails(cafeName: cafeName)
-            }
 
             // Add button action for adding reviews
             cafeView.addReviewButton.addTarget(self, action: #selector(onAddReviewTapped), for: .touchUpInside)
-        }
-
-        private func fetchCafeDetails(cafeName: String) {
-            // Fetch the cafe document from Firestore using the cafe name
-            db.collection("cafes").whereField("name", isEqualTo: cafeName).getDocuments { [weak self] (snapshot, error) in
-                guard let self = self else { return }
-
-                if let error = error {
-                    print("Error fetching cafe details: \(error.localizedDescription)")
-                    return
-                }
-
-                guard let documents = snapshot?.documents, !documents.isEmpty else {
-                    print("No matching cafe found.")
-                    return
-                }
-
-                // Assuming the first document is the correct match
-                let document = documents.first!
-                let data = document.data()
-
-                // Parse and update cafe details
-                self.updateCafeDetails(from: data)
-
-                // Fetch associated reviews using the cafe document ID
-                let cafeID = document.documentID
-                self.fetchReviews(for: cafeID)
-            }
         }
 
         private func fetchReviews(for cafeId: String) {

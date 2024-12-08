@@ -10,6 +10,7 @@ import UIKit
 class CafeBottomSheetController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     private let bottomSheetView = CafeBottomSheet()
     var cafes: [Place] = [] // Array of cafes to display
+    let notificationCenter = NotificationCenter.default
 
     override func loadView() {
         view = bottomSheetView
@@ -43,8 +44,14 @@ class CafeBottomSheetController: UIViewController, UITableViewDataSource, UITabl
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         let selectedCafe = cafes[indexPath.row]
-        // Handle selection (e.g., show cafe details or center map)
-        print("Selected Cafe: \(selectedCafe.title)")
+        
+        // show the cafe screen
+        notificationCenter.post(
+            name: Notification.Name("viewCafe"),
+            object: nil,
+            userInfo: ["cafeName": selectedCafe.name])
+        
+        self.dismiss(animated: true)
     }
 }
 

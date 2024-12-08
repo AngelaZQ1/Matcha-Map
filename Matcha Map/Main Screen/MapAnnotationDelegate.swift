@@ -33,16 +33,18 @@ extension ViewController: MKMapViewDelegate{
 
         let cafeName = annotation.title ?? ""  // Use cafe's name or another unique identifier
 
-        // Navigate to CafeViewController and pass the cafe name
-        let cafeViewController = CafeViewController()
-        cafeViewController.cafeName = cafeName  // Passing the cafe name
-
-        if let navigationController = view.window?.rootViewController as? UINavigationController {
-            navigationController.pushViewController(cafeViewController, animated: true)
-        } else if let navigationController = UIApplication.shared.windows.first?.rootViewController as? UINavigationController {
-            navigationController.pushViewController(cafeViewController, animated: true)
-        } else {
-            print("Failed to find navigation controller")
+        
+        // get the cafe name and show cafe details screen
+        let api = ApiCalls()
+        api.getCafeByName(cafeName as! String) { result in
+            switch result {
+            case .success(let cafe):
+                let cafeViewController = CafeViewController()
+                cafeViewController.cafe = cafe
+                self.navigationController?.pushViewController(cafeViewController, animated: true)
+            case .failure(let error):
+                print("Error: \(error.localizedDescription)")
+            }
         }
     }
 

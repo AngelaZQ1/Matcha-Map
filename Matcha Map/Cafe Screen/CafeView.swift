@@ -38,7 +38,7 @@ class CafeView: UIView {
     }
     func setupCafeNameLabel(){
         cafeNameLabel = UILabel()
-        cafeNameLabel.font = UIFont.systemFont(ofSize: 18)
+        cafeNameLabel.font = UIFont.systemFont(ofSize: 22)
         cafeNameLabel.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(cafeNameLabel)
     }
@@ -102,7 +102,7 @@ class CafeView: UIView {
             cafeNameLabel.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 16),
             cafeNameLabel.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 8),
             
-            starRating.topAnchor.constraint(equalTo: cafeNameLabel.bottomAnchor, constant: -12),
+            starRating.topAnchor.constraint(equalTo: cafeNameLabel.bottomAnchor, constant: 8),
             starRating.leadingAnchor.constraint(equalTo: cafeNameLabel.leadingAnchor, constant: 10),
             starRating.heightAnchor.constraint(equalToConstant: 25),
             starRating.widthAnchor.constraint(equalToConstant: 110),

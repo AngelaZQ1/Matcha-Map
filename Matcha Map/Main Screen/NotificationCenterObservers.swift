@@ -40,6 +40,12 @@ extension ViewController {
             name: Notification.Name("addReview"),
             object: nil
         )
+        notificationCenter.addObserver(
+            self,
+            selector: #selector(handleViewCafe(_:)),
+            name: Notification.Name("viewCafe"),
+            object: nil
+        )
     }
     
     @objc private func handleLogIn(_ notification: Notification) {
@@ -73,6 +79,23 @@ extension ViewController {
             let addReviewVC = AddReviewViewController()
             addReviewVC.cafe = cafe as! Cafe
             self.navigationController?.pushViewController(addReviewVC, animated: true)
+        }
+    }
+    @objc private func handleViewCafe(_ notification: Notification) {
+        if let userInfo = notification.userInfo,
+           let cafeName = userInfo["cafeName"] {
+            let api = ApiCalls()
+            api.getCafeByName(cafeName as! String) { result in
+                switch result {
+                case .success(let cafe):
+                    print("Cafe: \(cafe)")
+                    let cafeVC = CafeViewController()
+                    cafeVC.cafe = cafe
+                    self.navigationController?.pushViewController(cafeVC, animated: true)
+                case .failure(let error):
+                    print("Error: \(error.localizedDescription)")
+                }
+            }
         }
     }
 }
