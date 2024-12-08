@@ -8,7 +8,7 @@
 import Foundation
 import MapKit
 import FirebaseFirestore
-extension ViewController: MKMapViewDelegate{
+extension ExploreViewController: MKMapViewDelegate{
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
             guard let place = annotation as? Place else { return nil }
 

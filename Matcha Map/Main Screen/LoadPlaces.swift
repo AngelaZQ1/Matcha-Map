@@ -2,7 +2,7 @@ import Foundation
 import CoreLocation
 import MapKit
 
-extension ViewController{
+extension ExploreViewController{
     func loadPlacesAround(query: String){
         //MARK: initializing the notification center...
         let notificationCenter = NotificationCenter.default

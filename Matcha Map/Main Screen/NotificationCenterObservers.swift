@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension ViewController {
+extension ExploreViewController {
     
     func addNotificationCenterObservers() {
         notificationCenter.addObserver(

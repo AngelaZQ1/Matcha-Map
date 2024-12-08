@@ -2,7 +2,7 @@
 import Foundation
 import CoreLocation
 
-extension ViewController: CLLocationManagerDelegate {
+extension ExploreViewController: CLLocationManagerDelegate {
     func setupLocationManager() {
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
