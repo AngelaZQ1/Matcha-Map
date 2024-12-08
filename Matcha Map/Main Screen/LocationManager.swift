@@ -1,10 +1,4 @@
 //
-//  LocationManager.swift
-//  App14
-//
-//  Created by Sakib Miazi on 6/14/23.
-//
-
 import Foundation
 import CoreLocation
 
@@ -37,14 +31,14 @@ extension ViewController: CLLocationManagerDelegate {
         guard let location = locations.first else { return }
         
         // Hide loading indicator once the location is updated
-        if !mainScreen.buttonLoading.isHidden {
-            mainScreen.buttonLoading.isHidden = true
-        }
+//        if !mainScreen.buttonLoading.isHidden {
+//            mainScreen.buttonLoading.isHidden = true
+//        }
         
         // Show the search button (or any other UI element that should be visible after fetching location)
-        if mainScreen.buttonSearch.isHidden {
-            mainScreen.buttonSearch.isHidden = false
-        }
+//        if mainScreen.buttonSearch.isHidden {
+//            mainScreen.buttonSearch.isHidden = false
+//        }
 
         // Center the map to the current location
         mainScreen.mapView.centerToLocation(location: location)

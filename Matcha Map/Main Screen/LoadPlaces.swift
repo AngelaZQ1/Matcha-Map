@@ -1,10 +1,3 @@
-//
-//  LoadPlaces.swift
-//  App14
-//
-//  Created by Sakib Miazi on 6/15/23.
-//
-
 import Foundation
 import CoreLocation
 import MapKit
@@ -43,4 +36,5 @@ extension ViewController{
             notificationCenter.post(name: .placesFromMap, object: mapItems)
         }
     }
+    
 }

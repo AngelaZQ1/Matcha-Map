@@ -29,33 +29,20 @@ class ViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         if Auth.auth().currentUser == nil {
-                    // If not logged in, show login screen
-                    let loginVC = LogInViewController()
-                    self.navigationController?.pushViewController(loginVC, animated: false)
-                }
-        // Listen to authentication state changes
+            let loginVC = LogInViewController()
+            self.navigationController?.pushViewController(loginVC, animated: false)
+        }
+        
         handleAuth = Auth.auth().addStateDidChangeListener { auth, user in
             if let user = user {
                 self.reloadUserProfile { refreshedUser in
                     self.currentUser = refreshedUser
-                 
-
-                    // Set up navigation bar for logged in user
-//                    self.setupRightBarButton(isLoggedin: true)
-                    
-                    // Fetch cafes for the current user
-//                    self.fetchCafes()
+                    self.cafeList.removeAll()
+                    self.fetchLocationsFromFirestore()
                 }
             } else {
-                // Handle sign-out
                 self.currentUser = nil
-//                self.mainScreen.labelText.text = "Please sign in!"
-                
-                
-                // Reset chat list and reload table
                 self.cafeList.removeAll()
-                //self.mainScreen.tableViewChats.reloadData()
-                //self.setupRightBarButton(isLoggedin: false)
             }
         }
     }
@@ -74,121 +61,104 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        title = "Explore"
-        navigationController?.navigationBar.prefersLargeTitles = true
+//        title = "Explore"
+//        navigationController?.navigationBar.prefersLargeTitles = false
         
-        //MARK: add action for current location button tap...
+        mainScreen.buttonExplore.addTarget(self, action: #selector(setupBottomSheet), for: .touchUpInside)
+
         mainScreen.buttonCurrentLocation.addTarget(self, action: #selector(onButtonCurrentLocationTapped), for: .touchUpInside)
-        
-        //MARK: add action for bottom search button tap...
-//        mapView.buttonSearch.addTarget(self, action: #selector(onButtonSearchTapped), for: .touchUpInside)
-        
-        //MARK: setting up location manager...
         setupLocationManager()
-        
-        //MARK: center the map view to current location when the app loads...
         onButtonCurrentLocationTapped()
         
-        fetchLocationsFromFirestore()
-        //MARK: Annotating Northeastern University...
-        let northeastern = Place(
-            title: "Northeastern University",
-            coordinate: CLLocationCoordinate2D(latitude: 42.339918, longitude: -71.089797),
-            info: "LVX VERITAS VIRTVS"
-        )
-        
-        mainScreen.mapView.addAnnotation(northeastern)
         mainScreen.mapView.delegate = self
-        
         addNotificationCenterObservers()
     }
     
-    @objc func onButtonCurrentLocationTapped(){
-            if let uwLocation = locationManager.location{
-                mainScreen.mapView.centerToLocation(location: uwLocation)
-            }
-            
+    @objc func onButtonCurrentLocationTapped() {
+        if let uwLocation = locationManager.location {
+            mainScreen.mapView.centerToLocation(location: uwLocation)
+        } else {
+            let defaultLocation = CLLocation(latitude: 42.339918, longitude: -71.089797)
+            mainScreen.mapView.centerToLocation(location: defaultLocation)
         }
-    private func fetchLocationsFromFirestore() {
-            // Fetch documents from "locations" collection
-            database.collection("cafes").getDocuments { snapshot, error in
-                if let error = error {
-                    print("Error fetching locations: \(error.localizedDescription)")
-                    return
-                }
-                
-                guard let documents = snapshot?.documents else {
-                    print("No locations found")
-                    return
-                }
-                
-                // Parse documents into Place objects and add to the map
-                for document in documents {
-                    let data = document.data()
-                    
-                    guard let name = data["name"] as? String,
-                              let avgRating = data["avgRating"] as? Double,
-                              let coordinateData = data["coordinate"] as? GeoPoint else {
-                            print("Invalid data format for document: \(document.documentID)")
-                            continue
-                        }
-                        
-                        // Extract coordinate from GeoPoint
-                        let coordinate = CLLocationCoordinate2D(latitude: coordinateData.latitude, longitude: coordinateData.longitude)
-                    let info = String(avgRating) + "rating out of five"
-                    let place = Place(
-                        title: name,
-                        coordinate: coordinate,
-                        info: info
-                    )
-                    
-                    // Add annotation to the map
-                    self.mainScreen.mapView.addAnnotation(place)
-                    self.cafeList.append(place)
-                }
-            }
-        }
-
-
-    
-    @objc func setupBottomSheet(){
-        
-        //MARK: Setting up bottom search sheet...
-//        let searchViewController  = SearchViewController()
-//        searchViewController.delegateToMapView = self
-//        
-//        let navForSearch = UINavigationController(rootViewController: searchViewController)
-//        navForSearch.modalPresentationStyle = .pageSheet
-//        
-//        if let searchBottomSheet = navForSearch.sheetPresentationController{
-//            searchBottomSheet.detents = [.medium(), .large()]
-//            searchBottomSheet.prefersGrabberVisible = true
-//        }
-//        
-//        present(navForSearch, animated: true)
     }
     
-    //MARK: show selected place on map...
-    func showSelectedPlace(placeItem: MKMapItem){
+    private func fetchLocationsFromFirestore() {
+        database.collection("cafes").getDocuments { snapshot, error in
+            if let error = error {
+                print("Error fetching cafes: \(error.localizedDescription)")
+                return
+            }
+
+            guard let documents = snapshot?.documents else {
+                print("No cafes found")
+                return
+            }
+
+            for document in documents {
+                let data = document.data()
+
+                guard
+                    let name = data["name"] as? String,
+                    let avgRating = data["avgRating"] as? Double,
+                    let coordinateData = data["coordinate"] as? GeoPoint,
+                    let reviews = data["reviews"] as? [String],
+                    let images = data["images"] as? [String]
+                else {
+                    print("Invalid data format for document: \(document.documentID)")
+                    continue
+                }
+
+                let coordinate = CLLocationCoordinate2D(latitude: coordinateData.latitude, longitude: coordinateData.longitude)
+                let place = Place(
+                    id: document.documentID,
+                    name: name,
+                    coordinate: coordinate,
+                    avgRating: avgRating,
+                    reviews: reviews,
+                    images: images
+                )
+
+                self.cafeList.append(place)
+                self.mainScreen.mapView.addAnnotation(place)
+            }
+
+            // Call setupBottomSheet after fetching cafes
+            self.setupBottomSheet()
+        }
+    }
+    
+    @objc func setupBottomSheet() {
+        let cafeBottomSheetController = CafeBottomSheetController()
+        cafeBottomSheetController.cafes = cafeList
+        cafeBottomSheetController.modalPresentationStyle = .pageSheet
+        if let sheet = cafeBottomSheetController.sheetPresentationController {
+            sheet.detents = [.medium(), .large()]
+            sheet.prefersGrabberVisible = true
+        }
+        present(cafeBottomSheetController, animated: true)
+    }
+    
+    func showSelectedPlace(placeItem: MKMapItem) {
         let coordinate = placeItem.placemark.coordinate
         mainScreen.mapView.centerToLocation(
-            location: CLLocation(
-                latitude: coordinate.latitude,
-                longitude: coordinate.longitude
-            )
+            location: CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
         )
+
         let place = Place(
-            title: placeItem.name!,
+            id: nil,
+            name: placeItem.name ?? "Unknown",
             coordinate: coordinate,
-            info: placeItem.description
+            avgRating: 0.0,
+            reviews: [],
+            images: []
         )
         mainScreen.mapView.addAnnotation(place)
     }
-
 }
 
-extension MKMapView{
-    func centerToLocation(location: CLLocation, radius: CLLocationDistance = 1000){
+extension MKMapView {
+    func centerToLocation(location: CLLocation, radius: CLLocationDistance = 1000) {
         let coordinateRegion = MKCoordinateRegion(
             center: location.coordinate,
             latitudinalMeters: radius,

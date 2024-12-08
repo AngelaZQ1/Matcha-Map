@@ -8,8 +8,8 @@ struct Cafe: Decodable {
     var name: String
     var coordinate: CLLocationCoordinate2D
     var avgRating: Double
-    var reviews: [Review]
-    var images: [String]  // Array of image URLs as strings
+    var reviews: [String]?
+    var images: [String]?  // Array of image URLs as strings
     
     enum CodingKeys: String, CodingKey {
         case id
@@ -21,7 +21,7 @@ struct Cafe: Decodable {
     }
 
     // Custom initializer for direct instantiation
-    init(id: String? = nil, name: String, coordinate: CLLocationCoordinate2D, avgRating: Double, reviews: [Review], images: [String]) {
+    init(id: String? = nil, name: String, coordinate: CLLocationCoordinate2D, avgRating: Double, reviews: [String]?, images: [String]?) {
         self.id = id
         self.name = name
         self.coordinate = coordinate
@@ -30,6 +30,7 @@ struct Cafe: Decodable {
         self.images = images
     }
 
+    
     // Decoding initializer for Firestore data
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
@@ -48,7 +49,7 @@ struct Cafe: Decodable {
         self.coordinate = CLLocationCoordinate2D(latitude: coordinateArray[0], longitude: coordinateArray[1])
         
         self.avgRating = try container.decode(Double.self, forKey: .avgRating)
-        self.reviews = try container.decode([Review].self, forKey: .reviews)
+        self.reviews = try container.decode([String].self, forKey: .reviews)
         self.images = try container.decode([String].self, forKey: .images) // Array of URLs
     }
 
@@ -60,7 +61,8 @@ struct Cafe: Decodable {
             "latitude": coordinate.latitude,
             "longitude": coordinate.longitude,
             "avgRating": avgRating,
-            "reviews": reviews.map { $0.toDictionary() },
+//            "reviews": reviews.map { $0.toDictionary() },
+            "reviews": reviews,
             "images": images // Array of URLs as strings
         ]
     }

@@ -9,25 +9,25 @@ import Foundation
 import MapKit
 import FirebaseFirestore
 extension ViewController: MKMapViewDelegate{
-    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation)
-        -> MKAnnotationView? {
-        guard let annotation = annotation as? Place else { return nil }
-        
-        var view:MKMarkerAnnotationView
-        
-        if let annotationView = mapView.dequeueReusableAnnotationView(
-            withIdentifier: Configs.placeIdentifier) as? MKMarkerAnnotationView{
-            annotationView.annotation = annotation
-            view = annotationView
-        }else{
-            view = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: Configs.placeIdentifier)
-            view.canShowCallout = true
-            view.calloutOffset = CGPoint(x: -5, y: 5)
-            view.rightCalloutAccessoryView = UIButton(type: .detailDisclosure)
-        }
-        return view
-    }
+    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+            guard let place = annotation as? Place else { return nil }
 
+            let identifier = "PlaceAnnotation"
+            var annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier) as? MKPinAnnotationView
+
+            if annotationView == nil {
+                annotationView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: identifier)
+                annotationView?.canShowCallout = true
+                annotationView?.pinTintColor = .red
+
+                // Add custom callout button
+                annotationView?.rightCalloutAccessoryView = UIButton(type: .detailDisclosure)
+            } else {
+                annotationView?.annotation = annotation
+            }
+
+            return annotationView
+        }
     func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
         guard let annotation = view.annotation as? Place else { return }
 

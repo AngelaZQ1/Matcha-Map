@@ -21,7 +21,7 @@ class VisitedCafesViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "Cafes You've Visited"
+        title = "Visited"
         navigationController?.navigationBar.prefersLargeTitles = false
         
         visitedCafesView.visitedCafesTableView.dataSource = self
@@ -41,7 +41,8 @@ class VisitedCafesViewController: UIViewController {
                  coordinate: CLLocationCoordinate2D(latitude: 42.34631876789066, longitude: -71.10735847575242),
                  avgRating: 4.0,
                  reviews: [],
-                 images: [])
+                 images: []
+                 )
         ]
     }
 }

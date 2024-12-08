@@ -1,10 +1,3 @@
-//
-//  ContactsTableViewCell.swift
-//  App10
-//
-//  Created by Sakib Miazi on 5/25/23.
-//
-
 import UIKit
 
 class ReviewsTableViewCell: UITableViewCell {
