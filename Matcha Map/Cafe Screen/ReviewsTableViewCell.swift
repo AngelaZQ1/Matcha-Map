@@ -2,7 +2,7 @@ import UIKit
 
 class ReviewsTableViewCell: UITableViewCell {
     var wrapperCellView: UIView!
-    var usernameLabel: UILabel!
+//    var usernameLabel: UILabel! omitting because Review documents contain the user id instead of the username
     var starRating: StarRatingView!
     var reviewTitleLabel: UILabel!
     var reviewDetailsLabel: UILabel!
@@ -11,7 +11,7 @@ class ReviewsTableViewCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         setupWrapperCellView()
-        setupUsernameLabel()
+//        setupUsernameLabel()
         setupStarRating()
         setupReviewTitleLabel()
         setupReviewDetailsLabel()
@@ -26,12 +26,12 @@ class ReviewsTableViewCell: UITableViewCell {
         self.addSubview(wrapperCellView)
     }
     
-    func setupUsernameLabel(){
-        usernameLabel = UILabel()
-        usernameLabel.font = UIFont.boldSystemFont(ofSize: 16)
-        usernameLabel.translatesAutoresizingMaskIntoConstraints = false
-        wrapperCellView.addSubview(usernameLabel)
-    }
+//    func setupUsernameLabel(){
+//        usernameLabel = UILabel()
+//        usernameLabel.font = UIFont.boldSystemFont(ofSize: 16)
+//        usernameLabel.translatesAutoresizingMaskIntoConstraints = false
+//        wrapperCellView.addSubview(usernameLabel)
+//    }
     
     func setupStarRating() {
         starRating = StarRatingView(rating: 3)
@@ -62,18 +62,18 @@ class ReviewsTableViewCell: UITableViewCell {
             wrapperCellView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -8),
             wrapperCellView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -8),
             
-            usernameLabel.topAnchor.constraint(equalTo: wrapperCellView.topAnchor, constant: 12),
-            usernameLabel.leadingAnchor.constraint(equalTo: wrapperCellView.leadingAnchor),
+//            usernameLabel.topAnchor.constraint(equalTo: wrapperCellView.topAnchor, constant: 12),
+//            usernameLabel.leadingAnchor.constraint(equalTo: wrapperCellView.leadingAnchor),
             
-            starRating.leadingAnchor.constraint(equalTo: usernameLabel.leadingAnchor, constant: 50),
-            starRating.topAnchor.constraint(equalTo: usernameLabel.bottomAnchor),
+            starRating.leadingAnchor.constraint(equalTo: wrapperCellView.leadingAnchor, constant: 50),
+            starRating.topAnchor.constraint(equalTo: wrapperCellView.topAnchor),
             starRating.heightAnchor.constraint(equalToConstant: 20),
             
             reviewTitleLabel.topAnchor.constraint(equalTo: starRating.bottomAnchor, constant: 15),
-            reviewTitleLabel.leadingAnchor.constraint(equalTo: usernameLabel.leadingAnchor),
+            reviewTitleLabel.leadingAnchor.constraint(equalTo: wrapperCellView.leadingAnchor),
             
             reviewDetailsLabel.topAnchor.constraint(equalTo: reviewTitleLabel.bottomAnchor, constant: 4),
-            reviewDetailsLabel.leadingAnchor.constraint(equalTo: usernameLabel.leadingAnchor),
+            reviewDetailsLabel.leadingAnchor.constraint(equalTo: wrapperCellView.leadingAnchor),
             reviewDetailsLabel.trailingAnchor.constraint(equalTo: wrapperCellView.trailingAnchor, constant: -12),
             reviewDetailsLabel.bottomAnchor.constraint(equalTo: wrapperCellView.bottomAnchor, constant: -12),
         ])

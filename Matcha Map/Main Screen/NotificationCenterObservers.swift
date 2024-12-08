@@ -36,8 +36,8 @@ extension ViewController {
         )
         notificationCenter.addObserver(
             self,
-            selector: #selector(handleAddReview(_:)),
-            name: Notification.Name("addReview"),
+            selector: #selector(handleShowAddReviewScreen(_:)),
+            name: Notification.Name("addReviewTapped"),
             object: nil
         )
         notificationCenter.addObserver(
@@ -72,10 +72,9 @@ extension ViewController {
         let registerVC = RegisterViewController()
         self.navigationController?.pushViewController(registerVC, animated: true)
     }
-    @objc private func handleAddReview(_ notification: Notification) {
+    @objc private func handleShowAddReviewScreen(_ notification: Notification) {
         if let userInfo = notification.userInfo,
            let cafe = userInfo["cafe"]{
-            print("cafe", cafe)
             let addReviewVC = AddReviewViewController()
             addReviewVC.cafe = cafe as! Cafe
             self.navigationController?.pushViewController(addReviewVC, animated: true)
@@ -88,7 +87,6 @@ extension ViewController {
             api.getCafeByName(cafeName as! String) { result in
                 switch result {
                 case .success(let cafe):
-                    print("Cafe: \(cafe)")
                     let cafeVC = CafeViewController()
                     cafeVC.cafe = cafe
                     self.navigationController?.pushViewController(cafeVC, animated: true)

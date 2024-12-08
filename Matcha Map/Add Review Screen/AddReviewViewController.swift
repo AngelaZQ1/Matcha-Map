@@ -27,8 +27,9 @@ class AddReviewViewController: UIViewController {
         navigationController?.navigationBar.prefersLargeTitles = false
         
         addReviewView.overallRatingLabel.text = "0"
-                addReviewView.ratingSlider.addTarget(self, action: #selector(onRatingChanged), for: .valueChanged)
-                addReviewView.postReviewButton.addTarget(self, action: #selector(onPostReviewTapped), for: .touchUpInside)
+        addReviewView.ratingSlider.addTarget(self, action: #selector(onRatingChanged), for: .valueChanged)
+        addReviewView.postReviewButton.addTarget(self, action: #selector(onPostReviewTapped), for: .touchUpInside)
+        
         // Hide keyboard when tapping outside of text fields
         let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(hideKeyboardOnTap))
         tapRecognizer.cancelsTouchesInView = false

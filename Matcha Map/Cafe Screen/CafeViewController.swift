@@ -35,9 +35,15 @@
             cafeView.numReviewsLabel.text = "\(cafe.reviews?.count ?? 0) reviews"
             cafeView.numberRatingLabel.text = "\(cafe.avgRating)"
 
-
             // Add button action for adding reviews
             cafeView.addReviewButton.addTarget(self, action: #selector(onAddReviewTapped), for: .touchUpInside)
+            
+            notificationCenter.addObserver(
+                self,
+                selector: #selector(reloadReviewsTable(_:)),
+                name: Notification.Name("newReviewAdded"),
+                object: nil
+            )
         }
         
         @objc func refreshReviews() {
@@ -45,7 +51,7 @@
             fetchReviews(for: cafe.id ?? "" )
             }
 
-        private func fetchReviews(for cafeId: String) {
+        private func fetchReviews() {
             let db = Firestore.firestore()
 
             // Fetch the cafe document to get the review IDs
@@ -120,13 +126,15 @@
             }
         }
 
-
-
         @objc func onAddReviewTapped() {
             notificationCenter.post(
-                name: Notification.Name("addReview"),
+                name: Notification.Name("addReviewTapped"),
                 object: nil,
                 userInfo: ["cafe": cafe as Cafe])
+        }
+        
+        @objc func reloadReviewsTable(_ notification: Notification) {
+            self.fetchReviews()
         }
     }
 
@@ -139,14 +147,9 @@
         func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
             let cell = tableView.dequeueReusableCell(withIdentifier: "reviews", for: indexPath) as! ReviewsTableViewCell
             let review = reviews[indexPath.row]
-            cell.usernameLabel.text = review.user
             cell.starRating.rating = review.rating
             cell.reviewTitleLabel.text = review.title
             cell.reviewDetailsLabel.text = review.details
             return cell
-        }
-        
-        func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-            // Handle review selection if needed
         }
     }
