@@ -4,7 +4,7 @@ import MapKit
 
 // Cafe struct with Decodable conformance
 struct Cafe: Decodable {
-    @DocumentID var id: String?
+    let id: String?
     var name: String
     var coordinate: CLLocationCoordinate2D
     var avgRating: Double

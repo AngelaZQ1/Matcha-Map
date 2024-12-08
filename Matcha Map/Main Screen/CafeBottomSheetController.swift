@@ -43,12 +43,8 @@ class CafeBottomSheetController: UIViewController, UITableViewDataSource, UITabl
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         let selectedCafe = cafes[indexPath.row]
+        // Handle selection (e.g., show cafe details or center map)
         print("Selected Cafe: \(selectedCafe.title)")
-        
-              // Push the CafeViewController
-              let cafeViewController = CafeViewController()
-              cafeViewController.cafeName = selectedCafe.name
-              navigationController?.pushViewController(cafeViewController, animated: true)
     }
 }
 
