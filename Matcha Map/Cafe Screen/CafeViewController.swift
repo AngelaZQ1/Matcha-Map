@@ -1,9 +1,3 @@
-    //
-    //  SignUpViewController.swift
-    //  App11
-    //
-    //  Created by Angela Zheng on 10/28/24.
-    //
 
     import UIKit
     import MapKit
@@ -12,9 +6,9 @@
     class CafeViewController: UIViewController {
         let cafeView = CafeView()
         let notificationCenter = NotificationCenter.default
-        let db = Firestore.firestore() // Firestore database instance
+        let db = Firestore.firestore()
         
-        var cafeName: String?  // Variable to hold the passed cafe name
+        var cafeName: String?
         var cafe: Cafe!
         var reviews = [Review]()
         
