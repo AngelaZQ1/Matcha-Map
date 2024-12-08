@@ -23,13 +23,17 @@ class ProfilePageViewController: UIViewController {
         
         title = "Your Profile"
         navigationController?.navigationBar.prefersLargeTitles = false
-        
-        profilePage.username.text = user!.username
-        profilePage.numReviews.text = "\(String(user!.reviews.count)) reviews"
-        profilePage.favCafe.text = user!.favCafe
-        profilePage.favDrink.text = user!.favDrink
+        // Safely unwrap user
+           guard let user = user else {
+               print("Error: User is nil")
+               return
+           }
+        profilePage.username.text = user.username
+        profilePage.numReviews.text = "\(String(user.reviews.count)) reviews"
+        profilePage.favCafe.text = user.favCafe
+        profilePage.favDrink.text = user.favDrink
         // Load profile picture if URL is available
-        if let profilePicURLString = user?.profilePicURL,
+        if let profilePicURLString = user.profilePicURL,
           let profilePicURL = URL(string: profilePicURLString) {
            loadImage(from: profilePicURL) { [weak self] image in
                DispatchQueue.main.async {
