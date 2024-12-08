@@ -27,6 +27,8 @@
             // Set the title to the cafe's name if available
             title = cafe.name ?? "Cafe Details"
 
+            self.fetchReviews()
+            
             // Set up table view
             cafeView.reviewsTableView.dataSource = self
             cafeView.reviewsTableView.delegate = self
@@ -34,16 +36,22 @@
             cafeView.numReviewsLabel.text = "\(cafe.reviews?.count ?? 0) reviews"
             cafeView.numberRatingLabel.text = "\(cafe.avgRating)"
 
-
             // Add button action for adding reviews
             cafeView.addReviewButton.addTarget(self, action: #selector(onAddReviewTapped), for: .touchUpInside)
+            
+            notificationCenter.addObserver(
+                self,
+                selector: #selector(reloadReviewsTable(_:)),
+                name: Notification.Name("newReviewAdded"),
+                object: nil
+            )
         }
 
-        private func fetchReviews(for cafeId: String) {
+        private func fetchReviews() {
             let db = Firestore.firestore()
 
             // Fetch reviews for the cafe using the cafe's document ID
-            db.collection("cafes").document(cafeId).collection("reviews").getDocuments { snapshot, error in
+            db.collection("cafes").document(cafe.id!).collection("reviews").getDocuments { snapshot, error in
                 if let error = error {
                     print("Error fetching reviews: \(error.localizedDescription)")
                     return
@@ -94,13 +102,15 @@
             }
         }
 
-
-
         @objc func onAddReviewTapped() {
             notificationCenter.post(
-                name: Notification.Name("addReview"),
+                name: Notification.Name("addReviewTapped"),
                 object: nil,
                 userInfo: ["cafe": cafe as Cafe])
+        }
+        
+        @objc func reloadReviewsTable(_ notification: Notification) {
+            self.fetchReviews()
         }
     }
 
@@ -113,14 +123,9 @@
         func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
             let cell = tableView.dequeueReusableCell(withIdentifier: "reviews", for: indexPath) as! ReviewsTableViewCell
             let review = reviews[indexPath.row]
-            cell.usernameLabel.text = review.user
             cell.starRating.rating = review.rating
             cell.reviewTitleLabel.text = review.title
             cell.reviewDetailsLabel.text = review.details
             return cell
-        }
-        
-        func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-            // Handle review selection if needed
         }
     }
