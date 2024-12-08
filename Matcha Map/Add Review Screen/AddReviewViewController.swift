@@ -69,14 +69,21 @@ class AddReviewViewController: UIViewController {
         ]
        
             
-            // Update cafe's average rating and reviews list
-            self.updateCafeReviews(with: reviewData)
-            
-            // Notify other parts of the app that a new review has been added
-            self.notificationCenter.post(name: NSNotification.Name("NewReviewAdded"), object: nil)
-            
-            // Navigate back to the previous screen
-            self.navigationController?.popViewController(animated: true)
+        // Update cafe's average rating and reviews list
+        self.updateCafeReviews(with: reviewData)
+        
+        // Add the new review document to firestore
+        self.addReviewToDatabase(reviewData: reviewData)
+        
+        // Clear text fields
+        self.addReviewView.detailsTextView.text = ""
+        self.addReviewView.titleTextField.text = ""
+        
+        // Notify other parts of the app that a new review has been added
+        self.notificationCenter.post(name: NSNotification.Name("newReviewAdded"), object: nil)
+        
+        // Navigate back to the previous screen
+        self.navigationController?.popViewController(animated: true)
     }
     
     func updateCafeReviews(with reviewData: [String: Any]) {
@@ -190,6 +197,16 @@ class AddReviewViewController: UIViewController {
         }
     }
 
+    func addReviewToDatabase(reviewData: [String: Any]) {
+        // Add message to Firestore
+        let reviewRef = db.collection("reviews").document(UUID().uuidString)  // Generate unique ID
+        reviewRef.setData(reviewData) { error in
+            if let error = error {
+                print("Error adding review: \(error.localizedDescription)")
+                return
+            }
+        }
+    }
 
     
     @objc func hideKeyboardOnTap() {
