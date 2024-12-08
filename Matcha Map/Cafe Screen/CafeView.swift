@@ -43,7 +43,7 @@ class CafeView: UIView {
         self.addSubview(cafeNameLabel)
     }
     func setupStarRating() {
-        starRating = StarRatingView(rating: 2)
+        starRating = StarRatingView()
         starRating.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(starRating)
     }
