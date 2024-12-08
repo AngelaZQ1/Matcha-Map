@@ -1,18 +1,12 @@
-//
-//  SignUpViewController.swift
-//  App11
-//
-//  Created by Angela Zheng on 10/28/24.
-//
-
 import UIKit
 import MapKit
 import FirebaseFirestore
+import FirebaseAuth
 
 class CafeViewController: UIViewController {
     let cafeView = CafeView()
     let notificationCenter = NotificationCenter.default
-    let db = Firestore.firestore() // Firestore database instance
+    let db = Firestore.firestore() // Firestore instance
     
     var cafe: Cafe!
     var reviews = [Review]()
@@ -24,27 +18,111 @@ class CafeViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Set the title to the cafe's name if available
         title = cafe.name ?? "Cafe Details"
-
         self.fetchReviews(for: cafe.id ?? "")
         
-        // Set up table view
         cafeView.reviewsTableView.dataSource = self
         cafeView.reviewsTableView.delegate = self
         cafeView.cafeNameLabel.text = cafe.name
         cafeView.numReviewsLabel.text = "\(cafe.reviews?.count ?? 0) reviews"
         cafeView.numberRatingLabel.text = "\(cafe.avgRating)"
+        
+        // Set the visited status button
+        updateVisitedButton()
 
         // Add button action for adding reviews
         cafeView.addReviewButton.addTarget(self, action: #selector(onAddReviewTapped), for: .touchUpInside)
+        cafeView.visitedButton.addTarget(self, action: #selector(onVisitedButtonTapped), for: .touchUpInside)
         
-        notificationCenter.addObserver(
-            self,
-            selector: #selector(reloadReviewsTable(_:)),
-            name: Notification.Name("newReviewAdded"),
-            object: nil
-        )
+        notificationCenter.addObserver(self, selector: #selector(reloadReviewsTable(_:)), name: Notification.Name("newReviewAdded"), object: nil)
+    }
+
+    private func updateVisitedButton() {
+        guard let currentUserEmail = Auth.auth().currentUser?.email else {
+            print("No user logged in")
+            return
+        }
+        
+        let userRef = db.collection("users").document(currentUserEmail)
+        
+        // Check if the cafe is in the visited list for the user
+        userRef.getDocument { (document, error) in
+            if let error = error {
+                print("Error fetching user document: \(error.localizedDescription)")
+                return
+            }
+            
+            guard let document = document, document.exists else {
+                print("User document does not exist")
+                return
+            }
+            
+            // Get the visited cafes list
+            if let visitedCafes = document.data()?["visitedCafes"] as? [String] {
+                if visitedCafes.contains(self.cafe.id ?? "") {
+                    self.cafeView.visitedButton.setTitle("Visited", for: .normal)
+                    self.cafeView.visitedButton.backgroundColor = .green
+                } else {
+                    self.cafeView.visitedButton.setTitle("Not Visited", for: .normal)
+                    self.cafeView.visitedButton.backgroundColor = .blue
+                }
+            }
+        }
+    }
+
+    @objc func onVisitedButtonTapped() {
+        guard let currentUserEmail = Auth.auth().currentUser?.email else {
+            print("No user logged in")
+            return
+        }
+        
+        let userRef = db.collection("users").document(currentUserEmail)
+        
+        // Check if the cafe is already in the visited list
+        userRef.getDocument { (document, error) in
+            if let error = error {
+                print("Error fetching user document: \(error.localizedDescription)")
+                return
+            }
+            
+            guard let document = document, document.exists else {
+                print("User document does not exist")
+                return
+            }
+            
+            // Get the visited cafes list
+            if var visitedCafes = document.data()?["visitedCafes"] as? [String] {
+                if visitedCafes.contains(self.cafe.id ?? "") {
+                    // Remove cafe from visited list
+                    visitedCafes.removeAll { $0 == self.cafe.id }
+                    
+                    userRef.updateData([
+                        "visitedCafes": visitedCafes
+                    ]) { error in
+                        if let error = error {
+                            print("Error removing cafe from visited list: \(error.localizedDescription)")
+                        } else {
+                            // Update UI and change button title to Not Visited
+                            self.updateVisitedButton()
+                        }
+                    }
+                } else {
+                    // Add cafe to visited list
+                    visitedCafes.append(self.cafe.id ?? "")
+                    
+                    userRef.updateData([
+                        "visitedCafes": visitedCafes
+                    ]) { error in
+                        if let error = error {
+                            print("Error adding cafe to visited list: \(error.localizedDescription)")
+                        } else {
+                            // Update UI and change button title to Visited
+                            self.updateVisitedButton()
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private func fetchReviews(for cafeId: String) {
@@ -105,20 +183,6 @@ class CafeViewController: UIViewController {
         
         // Create a new Review object
         return Review(user: user, cafe: cafe, rating: rating, title: title, details: details)
-    }
-
-    private func updateCafeDetails(from data: [String: Any]) {
-        // Parse cafe data
-        if let name = data["name"] as? String,
-           let avgRating = data["avgRating"] as? Double,
-           let location = data["coordinate"] as? GeoPoint {
-            
-            cafe = Cafe(id: "", name: name, coordinate: CLLocationCoordinate2D(latitude: location.latitude, longitude: location.longitude), avgRating: avgRating, reviews: [], images: [])
-            
-            // Update UI
-            cafeView.numberRatingLabel.text = String(format: "%.1f", avgRating)
-            cafeView.numReviewsLabel.text = "(\(reviews.count) reviews)"
-        }
     }
 
     @objc func onAddReviewTapped() {
