@@ -1,10 +1,3 @@
-//
-//  ViewController.swift
-//  App14
-//
-//  Created by Sakib Miazi on 6/14/23.
-//
-
 import UIKit
 import MapKit
 import FirebaseAuth
@@ -39,6 +32,8 @@ class ViewController: UIViewController {
                     self.currentUser = refreshedUser
                     self.cafeList.removeAll()
                     self.fetchLocationsFromFirestore()
+                    // Setup Tab Bar
+                    self.setupTabBarController()
                 }
             } else {
                 self.currentUser = nil
@@ -61,19 +56,47 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-//        title = "Explore"
-//        navigationController?.navigationBar.prefersLargeTitles = false
-        
         mainScreen.buttonExplore.addTarget(self, action: #selector(setupBottomSheet), for: .touchUpInside)
-
         mainScreen.buttonCurrentLocation.addTarget(self, action: #selector(onButtonCurrentLocationTapped), for: .touchUpInside)
         setupLocationManager()
         onButtonCurrentLocationTapped()
         
         mainScreen.mapView.delegate = self
         addNotificationCenterObservers()
-    }
+        
     
+    }
+
+
+    func signoutUser() {
+        // Assuming you have a reference to the current user
+        guard let currentUser = Auth.auth().currentUser else {
+            print("No user is logged in")
+            return
+        }
+
+            do {
+                try Auth.auth().signOut()
+                print("User deleted and signed out successfully")
+
+                // Optionally, you can navigate to the login screen or clear other app data
+                self.navigateToLoginScreen()
+
+            } catch let signOutError as NSError {
+                print("Error signing out: \(signOutError.localizedDescription)")
+            }
+        
+    }
+
+    func navigateToLoginScreen() {
+        // Assuming you have a navigation controller
+        if let navigationController = self.navigationController {
+            let loginVC = LogInViewController() // Replace with your login view controller
+            navigationController.pushViewController(loginVC, animated: true)
+        }
+    }
+
+
     @objc func onButtonCurrentLocationTapped() {
         if let uwLocation = locationManager.location {
             mainScreen.mapView.centerToLocation(location: uwLocation)
@@ -155,6 +178,35 @@ class ViewController: UIViewController {
         )
         mainScreen.mapView.addAnnotation(place)
     }
+    
+    //MARK: Tab Bar Controller Setup
+    func setupTabBarController() {
+        let tabBarController = UITabBarController()
+
+        // Create the visited, explore, and profile view controllers
+        let visitedVC = VisitedCafesViewController()
+        visitedVC.view.backgroundColor = .white
+        visitedVC.tabBarItem = UITabBarItem(title: "Visited", image: UIImage(systemName: "checkmark.circle"), selectedImage: UIImage(systemName: "checkmark.circle.fill"))
+
+        let exploreVC = self // This view controller (Explore screen)
+        exploreVC.tabBarItem = UITabBarItem(title: "Explore", image: UIImage(systemName: "map"), selectedImage: UIImage(systemName: "map.fill"))
+
+        let profileVC = ProfilePageViewController()
+        profileVC.view.backgroundColor = .white
+        profileVC.tabBarItem = UITabBarItem(title: "Profile", image: UIImage(systemName: "person.circle"), selectedImage: UIImage(systemName: "person.circle.fill"))
+
+        // Assign the view controllers to the Tab Bar Controller
+        tabBarController.viewControllers = [visitedVC, exploreVC, profileVC]
+
+        // Set up the tab bar colors
+        tabBarController.tabBar.tintColor = .systemGreen // For selected items
+        tabBarController.tabBar.unselectedItemTintColor = .gray // For unselected items
+
+        // Set the tab bar as the root view controller
+        self.addChild(tabBarController)
+        self.view.addSubview(tabBarController.view)
+        tabBarController.didMove(toParent: self)
+    }
 }
 
 extension MKMapView {
@@ -167,3 +219,4 @@ extension MKMapView {
         setRegion(coordinateRegion, animated: true)
     }
 }
+
