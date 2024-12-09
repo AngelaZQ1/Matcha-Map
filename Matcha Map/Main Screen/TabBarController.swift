@@ -22,6 +22,9 @@ class ViewController: UITabBarController {
         exploreVC.tabBarItem = UITabBarItem(title: "Explore", image: UIImage(systemName: "map"), selectedImage: UIImage(systemName: "map.fill"))
 
         let profileVC = ProfilePageViewController()
+        // needed for the title and "edit profile" buttons to show up
+        let profileNavVC = UINavigationController(rootViewController: profileVC)
+
 
         // Fetch user data and set it to the profileVC
         fetchUserFromFirestore { user in
@@ -31,7 +34,7 @@ class ViewController: UITabBarController {
                 profileVC.tabBarItem = UITabBarItem(title: "Profile", image: UIImage(systemName: "person.circle"), selectedImage: UIImage(systemName: "person.circle.fill"))
                 
                 // Create tabBarController after setting the profileVC
-                self.viewControllers = [visitedVC, exploreVC, profileVC]
+                self.viewControllers = [visitedVC, exploreVC, profileNavVC]
                 self.selectedViewController = exploreVC // Make sure the Explore VC is selected initially
                 self.tabBar.tintColor = .systemGreen
                 self.tabBar.unselectedItemTintColor = .gray

@@ -21,6 +21,9 @@ class ProfilePageViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+         let editProfileButton = UIBarButtonItem(title: "Edit Profile", style: .done, target: self, action: #selector(onEditButtonTapped))
+         navigationItem.rightBarButtonItem = editProfileButton
+        
         title = "Your Profile"
         navigationController?.navigationBar.prefersLargeTitles = false
         // Safely unwrap user
@@ -43,8 +46,6 @@ class ProfilePageViewController: UIViewController {
        } else {
            profilePage.profilePic.image = UIImage(systemName: "person.circle") // Placeholder
        }
-        let editProfileButton = UIBarButtonItem(title: "Edit Profile", style: .done, target: self, action: #selector(onEditButtonTapped))
-        navigationItem.rightBarButtonItem = editProfileButton
         
         //MARK: Observe Save Changes
         notificationCenter.addObserver(
