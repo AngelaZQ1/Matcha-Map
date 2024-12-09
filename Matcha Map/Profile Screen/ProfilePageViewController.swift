@@ -26,11 +26,15 @@ class ProfilePageViewController: UIViewController {
         
         title = "Your Profile"
         navigationController?.navigationBar.prefersLargeTitles = false
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(handleUpdateUser(notification:)), name: Notification.Name("updateUser"), object: nil)
+
         // Safely unwrap user
-           guard let user = user else {
-               print("Error: User is nil")
-               return
-           }
+       guard let user = user else {
+           print("Error: User is nil")
+           return
+       }
+        
         profilePage.username.text = user.username
         profilePage.numReviews.text = "\(String(user.reviews.count)) reviews"
         profilePage.favCafe.text = user.favCafe
@@ -46,13 +50,6 @@ class ProfilePageViewController: UIViewController {
        } else {
            profilePage.profilePic.image = UIImage(systemName: "person.circle") // Placeholder
        }
-        
-        //MARK: Observe Save Changes
-        notificationCenter.addObserver(
-            self,
-            selector: #selector(handleUpdateUser(notification:)),
-            name: Notification.Name("updateUser"),
-            object: nil)
     }
     
     // MARK: - Load Image from URL
@@ -78,5 +75,28 @@ class ProfilePageViewController: UIViewController {
     // MARK: Handle update user
     @objc func handleUpdateUser(notification: Notification) {
         print("update user")
+        if let userInfo = notification.userInfo {
+            if let newUser = userInfo["newUser"] as? User {
+                DispatchQueue.main.async {
+                    // Update the profileVC directly
+                    self.user = newUser
+                    self.profilePage.username.text = newUser.username
+                    self.profilePage.numReviews.text = "\(String(newUser.reviews.count)) reviews"
+                    self.profilePage.favCafe.text = newUser.favCafe
+                    self.profilePage.favDrink.text = newUser.favDrink
+
+                    // Reload the profile image
+                    if let profilePicURLString = newUser.profilePicURL,
+                       let profilePicURL = URL(string: profilePicURLString) {
+                        self.loadImage(from: profilePicURL) { image in
+                            self.profilePage.profilePic.image = image
+                        }
+                    } else {
+                        self.profilePage.profilePic.image = UIImage(systemName: "person.circle")
+                    }
+                }
+            }
+        }
     }
+
 }
